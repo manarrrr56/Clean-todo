@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* Added a class to style completed tasks */
+      .done {
+        text-decoration: line-through;
+      }
+    </style>
+    <title>clean ToDo</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        background:rgb(45, 44, 44);
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      
+
+      h1 {
+        text-align: center;
+        margin: 20px 0; /* Margin at top and bottom of title */
+        background-color: rgb(45, 44, 44);
+        color: plum;
+        font-size: 40px;
+        padding: 10px;
+        width: 98.7vw;
+        position: absolute;
+        top: 0;
+      }
+
+      .input-wrapper{
+        display: flex;
+        border: 1px solid plum;
+        border-radius: 50px;
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+
+      }
+
+      .input-wrapper input{
+        flex: 1;
+        padding: 15px 20px;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: white;
+      }
+
+
+      .input-wrapper button {
+      background-color:plum;
+      border: none;
+      padding: 0 25px;
+      color:white;
+      font-weight: bold;
+      font-size: 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .input-wrapper button:hover {
+      background-color:rgb(254, 118, 254);
+    }
+
+    .btn{
+      border-radius: 20px;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin:10px;
+      transition: background-color 0.3s;
+
+
+    }
+
+    .toggle-btn{
+     background-color: plum;
+    
+    }
+
+    .toggle-btn:hover{
+      background-color: rgb(243, 129, 243);
+    }
+
+    .delete-btn{
+     background-color:red;
+    
+    }
+
+    .delete-btn:hover{
+      background-color:rgb(188, 0, 0);
+    }
+
+    ul{
+      color: white;
+    }
+    </style>
+
+    <h1
+      style="
+        background-color: rgb(45, 44, 44);
+        align-items: center;
+        text-align: center;
+        font-size: 40px;
+        color: plum;
+        margin: 0%;
+        padding: 10px;
+      "
+    >
+      Todo List
+    </h1>
+  </head>
+  <body>
+    <div class="input-wrapper">
+      <input
+       
+        id="taskInput"
+        type="text"
+        placeholder="Enter Task"
+      />
+      <button
+        
+        id="addTask"
+      >
+        Add Task
+      </button>
+      </div>
+
+
+    
+      <ul id="taskList"></ul>
+      <p
+        id="statusMessage"
+        style="font-size: 20px; font-weight: bold; color:plum"
+      ></p>
+   
+
+    <script>
+
+      //access elements from HTML to js
+      const taskInput = document.getElementById("taskInput");
+      const taskList = document.getElementById("taskList");
+      const addbtn = document.getElementById("addTask");
+
+      let tasks = [];
+
+      function renderTasks() {
+        taskList.innerHTML = ""; //remove whitespace
+
+        tasks.forEach((task, index) => {
+          //loop through task array
+          const li = document.createElement("li"); //create a new li element
+          li.className = task.done ? "done" : ""; // sees if task is done or not
+
+          li.innerHTML = `
+      ${task.name}
+      <button class="btn toggle-btn"  data-action="toggle" data-index="${index}" > Done</button>
+      <button class="btn delete-btn" data-action="delete" data-index="${index}"  >Delete</button>
+    `;
+          taskList.appendChild(li);
+        });
+
+        checkAllDone();
+      }
+
+      function checkAllDone() {
+        //message appears when all tasks are toggled
+        const statusMessage = document.getElementById("statusMessage");
+        if (tasks.length > 0 && tasks.every((task) => task.done)) {
+          statusMessage.textContent = "🎉 All tasks done!";
+        } else {
+          statusMessage.textContent = "";
+        }
+      }
+
+      function addTask() {
+        const name = taskInput.value.trim();
+        if (name) {
+          tasks.push({ name, done: false });
+          taskInput.value = "";
+          renderTasks();
+        }
+      }
+
+      addbtn.addEventListener("click", addTask);
+
+      // function b() {
+      //   var ul = document.getElementById("taskList");
+      //   ul.innerHTML = "";
+      //   for (let j = 0; j < data.length; j++) {
+      //     if (typeof data[j] !== "undefined") {
+      //       var li = document.createElement("li");
+      //       li.innerHTML = data[j].name +
+      //         " <button onclick='toggle(" + j + ")'>Toggle</button> " +
+      //         " <button onclick='deleteTask(" + j + ")'>Delete</button>";
+      //       if (data[j].done === true) {
+      //         li.style.textDecoration = "line-through";
+      //       }
+      //       ul.appendChild(li);
+      //     }
+      //   }
+      // }
+
+      taskList.addEventListener("click", function (e) {
+        const action = e.target.dataset.action;
+        const index = parseInt(e.target.dataset.index, 10);
+
+        if (action === "toggle") {
+          tasks[index].done = !tasks[index].done;
+        } else if (action === "delete") {
+          tasks.splice(index, 1); // Removed use of undefined
+        }
+
+        renderTasks(); // Update UI
+      });
+
+      addBtn.addEventListener("click", addTask);
+
+      // Added support for pressing Enter to add tasks
+      taskInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") addTask();
+      });
+
+      // function toggle(index) {
+      //   if (data[index].done === false) {
+      //     data[index].done = true;
+      //   } else {
+      //     data[index].done = false;
+      //   }
+      //   renderTasks();
+      // }
+
+      // function deleteTask(i) {
+      //   data[i] = undefined; // BAD PRACTICE: Leaves holes in array
+      //   renderTasks();
+      // }
+
+      // Extra confusing logic
+      // setInterval(() => {
+      //   var allDone = true;
+      //   for (var z = 0; z < data.length; z++) {
+      //     if (data[z] && data[z].done === false) {
+      //       allDone = false;
+      //     }
+      //   }
+      //   if (allDone && data.length > 0) {
+      //     console.log("All tasks done!");
+      //   }
+      // }, 10000);
+    </script>
+  </body>
+</html>
